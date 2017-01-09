@@ -4,8 +4,11 @@ For more information please refer to the documentation on ReadTheDocs:
  - https://docs.bigchaindb.com/projects/server/en/latest/drivers-clients/
    http-client-server-api.html
 """
+import re
+
 from flask import current_app, request
-from flask_restful import Resource
+from flask_restful import Resource, reqparse
+
 
 from bigchaindb.common.exceptions import (
     AmountError,
@@ -23,6 +26,7 @@ from bigchaindb.common.exceptions import (
 import bigchaindb
 from bigchaindb.models import Transaction
 from bigchaindb.web.views.base import make_error
+from bigchaindb.web.views import parameters
 
 
 class TransactionApi(Resource):
@@ -47,6 +51,16 @@ class TransactionApi(Resource):
 
 
 class TransactionListApi(Resource):
+    def get(self):
+        parser = reqparse.RequestParser()
+        parser.add_argument('operation', type=parameters.valid_operation)
+        parser.add_argument('unspent', type=parameters.valid_bool)
+        parser.add_argument('public_key', type=parameters.valid_ed25519,
+                            action="append")
+        parser.add_argument('asset_id', type=parameters.valid_txid)
+        args = parser.parse_args()
+        return args
+
     def post(self):
         """API endpoint to push transactions to the Federation.
 
