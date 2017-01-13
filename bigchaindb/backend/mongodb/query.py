@@ -247,3 +247,21 @@ def get_unvoted_blocks(conn, node_pubkey):
             'votes': False, '_id': False
         }}
     ])
+
+
+@register_query(MongoDBConnection)
+def get_transactions_list(conn, asset_id, operation=None):
+    match = {}
+    if asset_id:
+        # For CREATE: https://github.com/bigchaindb/bigchaindb/issues/1033
+        match['block.transactions.asset.id'] = asset_id
+
+    if operation:
+        match['block.transactions.operation'] = operation
+
+    cursor = conn.db['bigchain'].aggregate([
+        {'$match': match},
+        {'$unwind': '$block.transactions'},
+        {'$project': {'block.transactions.id': 1}}
+    ])
+    return (r['block']['transactions']['id'] for r in cursor)

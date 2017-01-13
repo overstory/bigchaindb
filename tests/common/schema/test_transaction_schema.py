@@ -9,6 +9,16 @@ def test_validate_transaction_create(create_tx):
 
 
 def test_validate_transaction_signed_create(signed_create_tx):
+    import json, time
+    from bigchaindb.common.utils import serialize
+    from bigchaindb.common.transaction import Transaction
+    payload = serialize(signed_create_tx.to_dict())
+    t = time.time()
+    for i in range(1000):
+        obj = json.loads(payload)
+        validate_transaction_schema(obj)
+        tx = Transaction.from_dict(obj)
+    print("%.3f", time.time() - t)
     validate_transaction_schema(signed_create_tx.to_dict())
 
 

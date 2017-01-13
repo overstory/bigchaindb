@@ -676,3 +676,15 @@ class Bigchain(object):
                 return Bigchain.BLOCK_INVALID
         else:
             return Bigchain.BLOCK_UNDECIDED
+
+    def list_transactions(self, asset_id=None, unspent=None, operation=None):
+        if not (asset_id or unspent):
+            raise ValueError("need one of asset_id or unspent")
+        txids = set(backend.query.list_transactions(asset_id, operation))
+        if unspent:
+            txids &= {link.txid for link in self.get_owned_ids(unspent)}
+        for txid in txids:
+            tx, status = self.get_transaction(txid, True)
+            if status == self.TX_VALID:
+                yield tx
+

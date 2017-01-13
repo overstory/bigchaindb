@@ -4,8 +4,6 @@ For more information please refer to the documentation on ReadTheDocs:
  - https://docs.bigchaindb.com/projects/server/en/latest/drivers-clients/
    http-client-server-api.html
 """
-import re
-
 from flask import current_app, request
 from flask_restful import Resource, reqparse
 
@@ -54,12 +52,16 @@ class TransactionListApi(Resource):
     def get(self):
         parser = reqparse.RequestParser()
         parser.add_argument('operation', type=parameters.valid_operation)
-        parser.add_argument('unspent', type=parameters.valid_bool)
-        parser.add_argument('public_key', type=parameters.valid_ed25519,
-                            action="append")
+        parser.add_argument('unspent', type=parameters.valid_ed25519)
         parser.add_argument('asset_id', type=parameters.valid_txid)
         args = parser.parse_args()
-        return args
+
+        # Require either asset_id or public_key to continue
+        if not args.asset_id or args.public_key:
+            make_error(400, message="One of asset_id or unspent required")
+
+        with current_app.config['bigchain_pool'] as bigchain:
+            return bigchain.list_transactions(**args)
 
     def post(self):
         """API endpoint to push transactions to the Federation.
