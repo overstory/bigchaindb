@@ -69,8 +69,7 @@ Transactions
    This endpoint returns only a transaction from the ``BACKLOG`` or a ``VALID`` or ``UNDECIDED``
    block on ``bigchain``, if exists.
 
-   :param tx_id: transaction ID
-   :type tx_id: hex string
+   :query string tx_id: transaction ID
 
    **Example request**:
 
@@ -306,8 +305,7 @@ Blocks
    returned. To check a block's status independently, use the `Statuses endpoint <#get--statuses?tx_id=tx_id|block_id=block_id>`_.
    To check the votes on a block, have a look at the `votes endpoint <#votes>`_.
 
-   :param block_id: block ID
-   :type block_id: hex string
+   :query string block_id: block ID
 
    **Example request**:
 
