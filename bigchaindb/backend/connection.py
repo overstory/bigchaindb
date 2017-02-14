@@ -7,7 +7,8 @@ from bigchaindb.common.exceptions import ConfigurationError
 
 BACKENDS = {
     'mongodb': 'bigchaindb.backend.mongodb.connection.MongoDBConnection',
-    'rethinkdb': 'bigchaindb.backend.rethinkdb.connection.RethinkDBConnection'
+    'rethinkdb': 'bigchaindb.backend.rethinkdb.connection.RethinkDBConnection',
+    'marklogic': 'bigchaindb.backend.marklogic.connection.MarkLogicDBConnection'
 }
 
 logger = logging.getLogger(__name__)
